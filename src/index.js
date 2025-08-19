@@ -1,5 +1,5 @@
 const player1 = {
-    NAME: "Mario",
+    NOME: "Mario",
     VELOCIDADE: 3,
     MANOBRABILIDADE: 4,
     PODER: 2,
@@ -7,7 +7,7 @@ const player1 = {
 };
 
 const player2 = {
-    NAME: "Luige",
+    NOME: "Luige",
     VELOCIDADE: 2,
     MANOBRABILIDADE: 4,
     PODER: 3,
@@ -32,23 +32,27 @@ const player2 = {
             skillPlayer1 = player1.VELOCIDADE + dicePlayer1;
             skillPlayer2 = player2.VELOCIDADE + dicePlayer2;
 
-            console.log(`Jogador1 um jogou um dado de ${dicePlayer1} + ${player1.VELOCIDADE} de velocidade = ${skillPlayer1}`);
-            console.log(`Jogador2 um jogou um dado de ${dicePlayer2} + ${player2.VELOCIDADE} de velocidade = ${skillPlayer2}`);
+            console.log(`${player1.NOME} um jogou um dado de ${dicePlayer1} + ${player1.VELOCIDADE} de velocidade = ${skillPlayer1}`);
+            console.log(`${player2.NOME} um jogou um dado de ${dicePlayer2} + ${player2.VELOCIDADE} de velocidade = ${skillPlayer2}`);
             
         }else if(block === "CURVA"){
             skillPlayer1 = player1.MANOBRABILIDADE + dicePlayer1;
             skillPlayer2 = player2.MANOBRABILIDADE + dicePlayer2;
 
-            console.log(`Jogador1 um jogou um dado de ${dicePlayer1} + ${player1.MANOBRABILIDADE} de manobrabilidade = ${skillPlayer1}`);
-            console.log(`Jogador2 um jogou um dado de ${dicePlayer2} + ${player2.MANOBRABILIDADE} de manobrabilidade = ${skillPlayer2}`);
+            console.log(`${player1.NOME} um jogou um dado de ${dicePlayer1} + ${player1.MANOBRABILIDADE} de manobrabilidade = ${skillPlayer1}`);
+            console.log(`${player2.NOME} um jogou um dado de ${dicePlayer2} + ${player2.MANOBRABILIDADE} de manobrabilidade = ${skillPlayer2}`);
         }else if(block === "CONFRONTO"){
             skillPlayer1 = player1.PODER + dicePlayer1;
             skillPlayer2 = player2.PODER + dicePlayer2;
 
-            console.log(`Jogador1 um jogou um dado de ${dicePlayer1} + ${player1.PODER} de poder = ${skillPlayer1}`);
-            console.log(`Jogador2 um jogou um dado de ${dicePlayer2} + ${player2.PODER} de poder = ${skillPlayer2}`);
+            console.log(`${player1.NOME} um jogou um dado de ${dicePlayer1} + ${player1.PODER} de poder = ${skillPlayer1}`);
+            console.log(`${player2.NOME} um jogou um dado de ${dicePlayer2} + ${player2.PODER} de poder = ${skillPlayer2}`);
         }
 
+        console.log(await roundWinner(skillPlayer1, skillPlayer2, player1, player2, block));
+
+        console.log(player1.PONTOS);
+        console.log(player2.PONTOS);
     }
 })();
 
@@ -56,12 +60,30 @@ async function roundWinner(skill1, skill2, player1, player2, round) {
     let result = '';
 
     if(round === "CONFRONTO"){
-        player1.PONTOS -= skill1 > skill2 && player1.PONTOS >= 0 ? 1 : 0;
-        player2.PONTOS -= skill2 > skill1 && player2.PONTOS >= 0 ? 1 : 0;
+        
+        if(skill1 > skill2){
+            player1.PONTOS -= skill1 > skill2 && player1.PONTOS > 0 ? 0 : 1;
+            result = player2.PONTOS === 0 ? `${player2.NOME} tem 0 pontos! Não perde pontos` : `${player2.NOME} perdeu um ponto!`;
+        }else if(skill2 > skill1){
+            result = player1.PONTOS === 0 ? `${player1.NOME} tem 0 pontos! Não perde pontos` : `${player1.NOME} perdeu um ponto!`;
+        }else {
+            result = "Empatado, nenhum jogador perdeu ponto!";
+        }
+        player2.PONTOS -= skill2 > skill1 && player2.PONTOS > 0 ? 0 : 1;
     }else{
+        player1.PONTOS += skill1 > skill2 ? 1 : 0;
+        player2.PONTOS += skill2 > skill1 ? 1 : 0;
 
+        if(skill1 > skill2){
+            result = `${player1.NOME} Venceu a disputa, ganhou um ponto!`;
+        }else if(skill2 > skill1){
+            result = `${player2.NOME} Venceu a disputa, ganhou um ponto!`;
+        }else{
+            result = "Empatado!"
+        }
     }
 
+    return result;
 }
 
 async function rollDice() {
