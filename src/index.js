@@ -16,7 +16,7 @@ const player2 = {
 
 //função principal
 (async function main() {
-    console.log("🚦🏁A Corrida vai começar! \n")
+    console.log("🚦🏁A Corrida vai começar!")
     for (let round = 1; round <= 5 ; round++) {
         console.log(`\nRodada ${round}`);
         let block = await raceEngine();
@@ -49,27 +49,47 @@ const player2 = {
             console.log(`${player2.NOME} um jogou um dado de ${dicePlayer2} + ${player2.PODER} de poder = ${skillPlayer2}`);
         }
 
-        console.log(await roundWinner(skillPlayer1, skillPlayer2, player1, player2, block));
+        console.log(await roundWinner(skillPlayer1, skillPlayer2, player1, player2, block)+"\n");
 
-        console.log(player1.PONTOS);
-        console.log(player2.PONTOS);
     }
+    await raceWinner(player1, player2);
 })();
+
+async function raceWinner(player1, player2) {
+    console.log(
+        `Corrida finalizada!\n
+        ${player1.NOME} marcou ${player1.PONTOS} pontos.\n
+        ${player2.NOME} marcou ${player2.PONTOS} pontos.
+        `);
+
+    if(player1.PONTOS > player2.PONTOS){
+        console.log(`${player1.NOME} Venceu a corrida!`);
+    }else if(player2.PONTOS > player1.PONTOS){
+        console.log(`${player2.NOME} Venceu a corrida!`);
+    }else{
+        console.log("Partida empatada!")
+    }
+}
 
 async function roundWinner(skill1, skill2, player1, player2, round) {
     let result = '';
 
     if(round === "CONFRONTO"){
         
-        if(skill1 > skill2){
-            player1.PONTOS -= skill1 > skill2 && player1.PONTOS > 0 ? 0 : 1;
-            result = player2.PONTOS === 0 ? `${player2.NOME} tem 0 pontos! Não perde pontos` : `${player2.NOME} perdeu um ponto!`;
-        }else if(skill2 > skill1){
+        if(skill1 < skill2){
+            if(player1.PONTOS > 0){
+                player1.PONTOS--;
+            }
             result = player1.PONTOS === 0 ? `${player1.NOME} tem 0 pontos! Não perde pontos` : `${player1.NOME} perdeu um ponto!`;
+        }else if(skill2 < skill1){
+            if(player2.PONTOS > 0){
+                player2.PONTOS--;
+            }
+            result = player2.PONTOS === 0 ? `${player2.NOME} tem 0 pontos! Não perde pontos` : `${player2.NOME} perdeu um ponto!`;
         }else {
             result = "Empatado, nenhum jogador perdeu ponto!";
         }
-        player2.PONTOS -= skill2 > skill1 && player2.PONTOS > 0 ? 0 : 1;
+        
     }else{
         player1.PONTOS += skill1 > skill2 ? 1 : 0;
         player2.PONTOS += skill2 > skill1 ? 1 : 0;
